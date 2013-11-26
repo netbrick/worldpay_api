@@ -33,6 +33,7 @@ end
 
 *YAML file* (when saved in /config/worldpay.yml, this file is loaded
 automatically):
+
 <pre>
 # config.yml
 environment: test

@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib/", __FILE__)
+
 require "worldpay/version"
 
 Gem::Specification.new do |s|
@@ -7,6 +8,7 @@ Gem::Specification.new do |s|
   s.version     = WorldPay::VERSION
   s.authors     = %w("strnadj")
   s.email       = %w("jan.strnadek@netbrick.eu")
+  s.homepage    = "https://github.com/netbrick/worldpay_api"
   s.summary     = "A little gem making WorldPay payments easy"
   s.description = "WorldPay payment library"
 

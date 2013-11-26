@@ -1,4 +1,4 @@
 url:
   test: https://secure-test.worldpay.com/jsp/merchant/xml/paymentService.jsp
   production: https://secure.worldpay.com/jsp/merchant/xml/paymentService.jsp
-
+payment_service_version: "1.4.1"

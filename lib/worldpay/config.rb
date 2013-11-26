@@ -37,7 +37,8 @@ module WorldPay
     def initialize
       # Load config.yml
       config = YAML.load_file(File.join(BASE_PATH, "config", "config.yml"))
-      @urls  = config["url"]
+      @urls                    = config["url"]
+      @payment_service_version = config["payment_service_version"]
     end
 
     def url
