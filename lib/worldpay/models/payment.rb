@@ -1,3 +1,5 @@
+require 'httpclient'
+
 module WorldPay
   class Payment
     # Attributes
@@ -9,8 +11,15 @@ module WorldPay
     # Shopper informations
     attr_reader :shopper_email_address
 
-    # Shipping address (optional)
-    attr_reader :firstName, :lastName, :address1, :address2, :address3, :postalCode, :city, :state, :countryCode, :telephoneNumber
+    # Client
+    attr_reader :client
+
+    # Shipping addresses!
+    WorldPay.configuration.shipping_addresses.each do |attr|
+      class_eval <<-EOV
+        attr_reader :#{attr}
+      EOV
+    end
 
     # Intitalize
     def initialize(attributes = {})
@@ -18,6 +27,10 @@ module WorldPay
       attributes.each do |key, value|
         instance_variable_set(:"@#{key}", value) if self.respond_to?(key)
       end
+
+      # Default value!
+      @payment_method_mask_include ||= [ "ALL" ]
+      @payment_method_mask_exclude ||= []
 
       # Version & Merchant ID
       @version     ||= WorldPay.configuration.payment_service_version
@@ -35,6 +48,7 @@ module WorldPay
       @payment_method_mask_include = [ "ONLINE" ]
       @payment_method_mask_exclude = []
     end
+
 
     # Get XML payment request!
     def get_payment_request
@@ -72,15 +86,15 @@ module WorldPay
 
             # Shoper payment
             xml.tag!("shopper") {
-              xml.shopperEmailAddress(@shopperEmailAddress)
+              xml.shopperEmailAddress(@shopper_email_address)
             }
 
             # Shipping address?
             if has_shipping_address?
               xml.tag!("shippingAddress") {
                 xml.tag!("address") {
-                  [ :firstName, :lastName, :address1, :address2, :address3, :postalCode, :city, :state, :countryCode, :telephoneNumber ].each do |attr|
-                    val = instance_variable_get(:"@#{attr.to_s}").to_s
+                  WorldPay.configuration.shipping_addresses.each do |attr|
+                    val = instance_variable_get(:"@#{attr}").to_s
                   
                     if !val.empty?
                       xml.tag!(attr.to_s) {
@@ -94,16 +108,28 @@ module WorldPay
           }
         }  
       }
-      xml
+      xml.target!
+    end
+
+    def create!
+      # Create client!
+      @client ||= HttpClient.new
+
+      # Set authentization
+      @client.set_auth(WorldPay.configuration.url, WorldPay.configuration.merchant_id, WorldPay.configuration.password)
+
+      # Get response!
+      @client.request(:post, WorldPay.configuration.url, nil, get_payment_request, {:content_type => "text/xml"})
     end
 
     private
       def has_shipping_address?
         # Some value from address?
-        # TODO: fujky
-        [ :firstName, :lastName, :address1, :address2, :address3, :postalCode, :city, :state, :countryCode, :telephoneNumber ].each do |attr|
-          return true if instance_variable_get(:"@#{attr.to_s}").to_s.empty?
+        WorldPay.configuration.shipping_addresses.each do |attr|
+          return true unless instance_variable_get(:"@#{attr}").blank?
         end
+
+        # No address filed!
         return false
       end
   end

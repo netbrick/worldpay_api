@@ -36,8 +36,19 @@ automatically):
 
 <pre>
 # config.yml
-environment: test
-merchant_id: MERCHANT_ID
+global: &global_settings
+  merchant_id: MERCHANT_ID
+
+development: &development
+  <<: *global_settings
+  environment: test
+
+test:
+  <<: *development
+
+production:
+  <<: *global_settings
+  environment: production
 
 # Ruby
 WorldPay.configure_from_yaml("config.yml")

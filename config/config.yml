@@ -1,4 +1,15 @@
 url:
   test: https://secure-test.worldpay.com/jsp/merchant/xml/paymentService.jsp
   production: https://secure.worldpay.com/jsp/merchant/xml/paymentService.jsp
-payment_service_version: "1.4.1"
+payment_service_version: "1.4"
+shipping_adress_fields:
+  - firstName
+  - lastName
+  - address1
+  - address2
+  - address3
+  - postalCode
+  - city
+  - state
+  - countryCode
+  - telephoneNumber

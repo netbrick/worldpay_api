@@ -14,8 +14,10 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = "worldpay"
 
-  s.files = `git ls-files`.split("\n")
+  # Dependency
+  s.add_dependency "httpclient", "~> 2.3.4.1"
 
+  s.files = `git ls-files`.split("\n")
   s.test_files = `git ls-files -- test/*`.split("\n")
   s.require_paths = ["lib"]
 end

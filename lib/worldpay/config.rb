@@ -12,10 +12,11 @@ module WorldPay
   end
 
   def self.configure_from_yaml(path)
-    yaml = YAML.load_file(path)
+    yaml = YAML.load_file(path)[Rails.env]
     return unless yaml
     configuration.environment = yaml["environment"]
     configuration.merchant_id = yaml["merchant_id"]
+    configuration.password    = yaml["password"]
   end
 
   def self.configure_from_rails
@@ -32,13 +33,14 @@ module WorldPay
   end
 
   class Configuration
-    attr_accessor :environment, :merchant_id
+    attr_accessor :environment, :merchant_id, :payment_service_version, :shipping_addresses, :password
 
     def initialize
       # Load config.yml
       config = YAML.load_file(File.join(BASE_PATH, "config", "config.yml"))
       @urls                    = config["url"]
       @payment_service_version = config["payment_service_version"]
+      @shipping_addresses      = config["shipping_adress_fields"]
     end
 
     def url
