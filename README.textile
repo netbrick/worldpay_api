@@ -1,0 +1,46 @@
+h1. WorldPay API Payment for Rails 3
+
+Specified by: "WorldPay payment specification":http://www.worldpay.com/support/kb/gg/submittingtransactionsredirect/rxml.html
+
+h2. Installation
+
+Install GEM:
+
+<pre>
+# Gemfile
+gem 'worldpay'
+
+# Manually
+gem install worldpay
+require 'worldpay'
+</pre>
+
+h2. Configuration
+
+WorldPay can be configured within a *config block* or YAML file
+configuration:
+
+<pre>
+# Initializer
+config/initializers/worldpay.rb
+
+# Content
+WorldPay.configure do |config|
+  config.environment = :test
+  config.merchant_id = "MERCHANT_ID"
+end
+</pre>
+
+*YAML file* (when saved in /config/worldpay.yml, this file is loaded
+automatically):
+<pre>
+# config.yml
+environment: test
+merchant_id: MERCHANT_ID
+
+# Ruby
+WorldPay.configure_from_yaml("config.yml")
+</pre>
+
+
+h2. Usage
