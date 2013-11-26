@@ -1,15 +1,44 @@
-url:
-  test: https://secure-test.worldpay.com/jsp/merchant/xml/paymentService.jsp
-  production: https://secure.worldpay.com/jsp/merchant/xml/paymentService.jsp
-payment_service_version: "1.4"
-shipping_adress_fields:
-  - firstName
-  - lastName
-  - address1
-  - address2
-  - address3
-  - postalCode
-  - city
-  - state
-  - countryCode
-  - telephoneNumber
+worldpay_config:
+  # WorldPay servers
+  url:
+    test: https://secure-test.worldpay.com/jsp/merchant/xml/paymentService.jsp
+    production: https://secure.worldpay.com/jsp/merchant/xml/paymentService.jsp
+
+  # Payment service version
+  payment_service_version: "1.4"
+
+  # Shipping address variable fields!
+  shipping_adress_fields:
+    - firstName
+    - lastName
+    - street
+    - houseName
+    - houseNumber
+    - houseNumberExtension
+    - address1
+    - address2
+    - address3
+    - postalCode
+    - city
+    - state
+    - countryCode
+    - telephoneNumber
+
+  # Specification of shipping address condition
+  # firstName?, lastName? (street, houseName?, houseNumber?
+  # houseNumberExtension? | address1, address2?, address3?),
+  # postalCode, city?, state?, countryCode, telephoneNumber?
+  valid_address_patterns:
+    - 
+      - address1
+      - countryCode
+      - postalCode
+      - city
+    -
+      - street
+      - countryCode
+      - postalCode
+      - city
+
+  # I try that against test api! - address has contains one of this
+  # fields, everything else seems to be optional

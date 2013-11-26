@@ -1,4 +1,4 @@
-h1. WorldPay API Payment for Rails 3
+h1. WorldPay API Payment for Rails 3 - STILL IN DEVELOPMENT
 
 Specified by: "WorldPay payment specification":http://www.worldpay.com/support/kb/gg/submittingtransactionsredirect/rxml.html
 
@@ -28,6 +28,7 @@ config/initializers/worldpay.rb
 WorldPay.configure do |config|
   config.environment = :test
   config.merchant_id = "MERCHANT_ID"
+  config.password    = "XML_PASSWORD"
 end
 </pre>
 
@@ -38,6 +39,7 @@ automatically):
 # config.yml
 global: &global_settings
   merchant_id: MERCHANT_ID
+  password: XML_PASSWORD
 
 development: &development
   <<: *global_settings

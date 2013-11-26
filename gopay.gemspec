@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
 
   # Dependency
   s.add_dependency "httpclient", "~> 2.3.4.1"
+  s.add_dependency "nokogiri"
 
   s.files = `git ls-files`.split("\n")
   s.test_files = `git ls-files -- test/*`.split("\n")

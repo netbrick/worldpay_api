@@ -1,3 +1,5 @@
+# -*- mode:ruby; coding:utf-8; -*-
+# Defined worldpay gem version
 module WorldPay
-  VERSION = "0.0.1"
+  VERSION = '0.0.3'
 end
