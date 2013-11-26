@@ -1,4 +1,5 @@
-worldpay_api
-============
+WorldPay API Payment GEM
+========================
 
-Ruby gem enabling communication with WorldPay api
+Specified by: http://www.worldpay.com/support/kb/gg/submittingtransactionsredirect/rxml.html
+
