@@ -164,6 +164,9 @@ module WorldPay
 
       def validate_payment_attributes
         # Check presence of necessary attributes
+        %w( order_code description ammount_value ammount_currency_code ammount_exponent shopper_email_address order_content).each do |attr|
+          fail "Missing parameter #{attr}" if instance_variable_get(:"@#{attr}").blank?
+        end
       end
 
       def check_payment_create_response
