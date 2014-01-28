@@ -8,7 +8,7 @@ module WorldPay
     # Attributes
     attr_reader :version, :merchant_id, :order_code, :description, :ammount_value, :ammount_currency_code, :ammount_exponent, :order_content
 
-    # Payments ARRAYS!
+    # Payments methods!
     attr_reader :payment_method_mask_include, :payment_method_mask_exclude
 
     # Shopper informations
@@ -25,6 +25,10 @@ module WorldPay
       class_eval <<-EOV
         attr_reader :#{attr}
       EOV
+    end
+
+    def set_order_content(html)
+      @order_content = html
     end
 
     # Intitalize
@@ -152,12 +156,24 @@ module WorldPay
     end
 
     # Get redirect url
-    def get_payment_url
+    def get_payment_url(params)
       # Create payment when no url presents
       create! unless @redirect_url
 
+      # Merge URL parameters
+      uri = URI(@redirect_url)
+
+      # Parse old parameters!
+      old_params = (uri.query) ? URI.decode_www_form(uri.query).inject({}) { |r, (key, value)| r[key.to_sym] = value; r} : {}
+
+      # Merge with new parameters!
+      params.merge! old_params
+
+      # Set params
+      uri.query = params.to_query
+
       # Return url
-      @redirect_url
+      uri.to_s
     end
 
     private

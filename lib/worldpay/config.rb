@@ -19,6 +19,7 @@ module WorldPay
     configuration.environment = yaml['environment']
     configuration.merchant_id = yaml['merchant_id']
     configuration.password    = yaml['password']
+    configuration.mac         = yaml['mac']
   end
 
   def self.configure_from_rails
@@ -36,7 +37,7 @@ module WorldPay
 
   # WorldPay configuration settings
   class Configuration
-    attr_accessor :environment, :merchant_id, :payment_service_version, :shipping_addresses, :password, :valid_address_patterns
+    attr_accessor :environment, :mac, :merchant_id, :payment_service_version, :shipping_addresses, :password, :valid_address_patterns
 
     def initialize
       # Load config.yml
@@ -45,6 +46,7 @@ module WorldPay
       @payment_service_version = config['payment_service_version']
       @shipping_addresses      = config['shipping_adress_fields']
       @valid_address_patterns  = config['valid_address_patterns']
+      @mac                     = config['mac']
     end
 
     def url
