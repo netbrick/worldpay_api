@@ -85,7 +85,7 @@ module WorldPay
       # Valid value, currencyCode and exponent
       errors << "Amount value" if amount[:value].to_s != @amount_value.to_s
       errors << "Amount currency code" if amount[:currencyCode].to_s != @amount_currency_code.to_s
-      errors << "Amount exponent" if amount[:exponent].to_s != @amount_exponent
+      errors << "Amount exponent" if amount[:exponent].to_s != @amount_exponent.to_s
 
       # Raise?!
       raise ::WorldPay::InvalidNotification.new(errors.join(', ')) if errors.size > 0
