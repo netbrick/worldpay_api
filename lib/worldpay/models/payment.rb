@@ -1,12 +1,13 @@
 # -*- mode:ruby; coding:utf-8; -*-
 require 'httpclient'
 require 'nokogiri'
+require 'digest'
 
 module WorldPay
   # Representation of WorldPay payment
   class Payment
     # Attributes
-    attr_reader :version, :merchant_id, :order_code, :description, :ammount_value, :ammount_currency_code, :ammount_exponent, :order_content
+    attr_reader :version, :merchant_id, :order_code, :description, :amount_value, :amount_currency_code, :amount_exponent, :order_content
 
     # Payments methods!
     attr_reader :payment_method_mask_include, :payment_method_mask_exclude
@@ -19,6 +20,9 @@ module WorldPay
 
     # Client
     attr_reader :client, :create_payment_response
+
+    # Status
+    attr_reader :status
 
     # Shipping addresses!
     WorldPay.configuration.shipping_addresses.each do |attr|
@@ -59,6 +63,40 @@ module WorldPay
       @payment_method_mask_exclude = []
     end
 
+    # Validate notification
+    # - rule series to validate this payment with notification
+    # - set last status (notification status)
+    def validate_notification(params)
+      # Error validation array
+      errors = []
+
+      # Merchant code
+      errors << "Merchant code" if params[:paymentService][:merchantCode] != WorldPay.configuration.merchant_id
+
+      # Get notify
+      order_status_event = params[:paymentService][:notify][:orderStatusEvent]
+
+      # Order code
+      errors << "Order code" if @order_code.to_s != order_status_event[:orderCode]
+
+      # Validate amount
+      amount = order_status_event[:payment][:amount]
+
+      # Valid value, currencyCode and exponent
+      errors << "Amount value" if amount[:value].to_s != @amount_value.to_s
+      errors << "Amount currency code" if amount[:currencyCode].to_s != @amount_currency_code.to_s
+      errors << "Amount exponent" if amount[:exponent].to_s != @amount_exponent
+
+      # Raise?!
+      raise ::WorldPay::InvalidNotification.new(errors.join(', ')) if errors.size > 0
+
+      # Get status?!
+      @status = order_status_event[:payment][:lastEvent].underscore.to_sym
+
+      # OK
+      true
+    end
+
     # Get XML payment request!
     def get_payment_request
       # Validate payment attributes
@@ -84,8 +122,8 @@ module WorldPay
             # Description
             xml.description(@description)
 
-            # Ammount
-            xml.tag!('amount', value: @ammount_value, currencyCode: @ammount_currency_code, exponent: @ammount_exponent)
+            # Amount
+            xml.tag!('amount', value: @amount_value, currencyCode: @amount_currency_code, exponent: @amount_exponent)
 
             # Order Content - CDATA!
             xml.tag!('orderContent') do
@@ -180,7 +218,7 @@ module WorldPay
 
       def validate_payment_attributes
         # Check presence of necessary attributes
-        %w( order_code description ammount_value ammount_currency_code ammount_exponent shopper_email_address order_content).each do |attr|
+        %w( order_code description amount_value amount_currency_code amount_exponent shopper_email_address order_content).each do |attr|
           fail "Missing parameter #{attr}" if instance_variable_get(:"@#{attr}").blank?
         end
       end
@@ -192,6 +230,10 @@ module WorldPay
         # Error attribute?!
         error = body.css('error').first
         fail error.children.first.content if error
+
+        # Validate merchant code
+        payment_service = body.css('paymentService').first
+        fail 'Invalid merchant code' if !payment_service || payment_service['merchantCode'].to_s != WorldPay.configuration.merchant_id
 
         # Validate order status!
         order_status = body.css('orderStatus').first
@@ -222,5 +264,10 @@ module WorldPay
         # No pattern matches
         return false
       end
+  end
+
+  # Invalid notification exception
+  class InvalidNotification < Exception
+
   end
 end
